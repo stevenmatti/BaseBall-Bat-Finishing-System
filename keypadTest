@@ -8,10 +8,8 @@ char keys[ROWS][COLS] = {
   {'7','8','9','C'},
   {'*','0','#','D'}
 };
-byte rowPins[ROWS] = {A3, A2, A1, A0}; //connect to the row pinouts of the keypad
-‐ four in a row
-byte colPins[COLS] = {MOSI, SCK, A5, A4}; //connect to the column pinouts of the k
-eypad ‐ four in a row
+byte rowPins[ROWS] = {A3, A2, A1, A0}; //connect to the row pinouts of the keypad ‐ four in a row
+byte colPins[COLS] = {MOSI, SCK, A5, A4}; //connect to the column pinouts of the keypad ‐ four in a row
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 void setup() { 
 Serial.begin(9600);
