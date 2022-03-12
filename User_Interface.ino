@@ -3,15 +3,7 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9341.h"
 #include <Keypad.h>
-#include <Stepper.h>
 
-/*
-const int stepsPerRevolution = 100;  // change this to fit the number of steps per revolution
-// for your motor
-
-// initialize the stepper library on pins 8 through 11:
-Stepper myStepper(stepsPerRevolution, 2, 3, 4, 5);
-*/
 //Stepper motors variables/setup
 int reverseSwitch = 2, CLOCK1 = 7, DIR1 = 6, CLOCK2 = 10, DIR2 = 9, p;
 float delay_time = 500;
