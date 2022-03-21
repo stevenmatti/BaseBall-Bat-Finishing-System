@@ -1,11 +1,10 @@
-
 #include "SPI.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9341.h"
 #include <Keypad.h>
 
 //Stepper motors variables/setup
-int reverseSwitch = 2, CLOCK1 = 7, DIR1 = 6, CLOCK2 = 10, DIR2 = 9, p;
+int reverseSwitch = 2, CLOCK1 = 7, DIR1 = 6, CLOCK2 = 5, DIR2 = 4, p;
 float delay_time = 500;
 boolean setdir = LOW; // Set Direction
 
@@ -26,6 +25,15 @@ char hexaKeys[ROWS][COLS] = {
   {'7','8','9','C'},
   {'*','0','#','D'}
 };
+/*
+char hexaKeys[ROWS][COLS] = {
+  {'D','C','B','A'},
+  {'#','9','6','3'},
+  {'0','8','5','2'},
+  {'*','7','4','1'}
+};
+*/
+
 byte rowPins[ROWS] = {31, 33, 35, 37}; //connect to the row pinouts of the keypad
 byte colPins[COLS] = {39, 41, 43, 45}; //connect to the column pinouts of the keypad
 
@@ -211,51 +219,227 @@ void setup() {
   tft.setRotation(1);
   //set display 240 X 320
   LCD_Init();
- 
-  mainMenu();
+
+  welcome();
+  //mainMenu();
 }
 
 void loop(void) {
 
-  char customKey = customKeypad.getKey();
-  if (customKey){
-  switch (customKey) {
-  case 'A': // Display Test
-    //tft.fillScreen(ILI9341_YELLOW);
-    displayTest();
-    break;
-  case 'B': // Motor Test
-    //tft.fillScreen(ILI9341_GREEN);
-    motorTest();
-    break;
-  case 'C': // Solenoid Test
-    solenoidTest();
-    break;
-  case 'D': // Keypad Test    mainMenu();
-    //tft.fillScreen(ILI9341_RED);
-    keypadTest();
-    break;
-  case '#': // Main Menu
+  char welcomeKey = customKeypad.getKey();
+ 
+  if (welcomeKey){
+  switch (welcomeKey) {
+  case '#': // main menu
+  {
     mainMenu();
-    break;
+   break;
+  }
   default:
-    //tft.fillRect(20, 190, 100, 32,ILI9341_GREEN);
+  {
     tft.setCursor(20, 190);
     tft.setTextColor(ILI9341_RED);  tft.setTextSize(2);
     tft.print("Invalid Option ...");
     delay(1000);
+    welcome();
+    break;
+    }
+  } 
+  }
+  delay(10);
+}
+
+//This function to print welcome message
+void welcome(){
+  tft.fillScreen(ILI9341_NAVY);
+  tft.setCursor(5,0);
+  tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(4);
+  tft.println("--Welcome--");
+  tft.println(" ");
+  tft.setTextColor(ILI9341_GREEN);  tft.setTextSize(2.5);
+  tft.println(" Press '#' to begin!");
+}
+
+//This function to print main menu and options
+void mainMenu() {
+
+  char mainMenuKey = NULL;
+  
+  tft.fillScreen(ILI9341_NAVY);
+  tft.setCursor(5,0);
+  tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(4);
+  tft.println("--Main Menu--");
+  tft.setTextSize(1);
+  tft.println(" ");
+  tft.setTextColor(ILI9341_GREEN);  tft.setTextSize(2.5);
+  tft.println(" A. User Mode");
+  tft.println(" B. Developer Mode");
+  tft.println(" C. Test Mode");
+
+  while (mainMenuKey == NULL)
+  {
+    mainMenuKey = customKeypad.getKey();
+  }
+  mainMenuLoop(mainMenuKey);
+
+}
+
+//This function to take in keypad input for main menu
+void mainMenuLoop(char mainMenuKey) {
+
+
+  if (mainMenuKey){
+  switch (mainMenuKey) {
+  case 'A': // User Mode
+    userModeMenu();
+    break;
+  case 'B': // Developer Mode
+    developerModeMenu();
+    break;
+  case 'C': // Test Mode
+    testModeMenu();
+    break;
+  case '#': // return to main Menu
+    tft.print("");
+    tft.setCursor(20, 190);
+    tft.setTextColor(ILI9341_RED);  tft.setTextSize(2);
+    tft.print("Already in Main Menu");
+    delay(1000);
+    mainMenu();
+    break;
+  default:
+    tft.setCursor(20, 190);
+    tft.setTextColor(ILI9341_RED);  tft.setTextSize(2);
+    tft.print("Invalid Option ...");
+    delay(1000);
+    mainMenu();
+    break;
+    }
+  } 
+  delay(10);
+}
+//This function to print user mode menu and options
+void userModeMenu() {
+  char userModeKey = NULL;
+  tft.fillScreen(ILI9341_NAVY);
+  tft.setCursor(5,0);
+  tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(4);
+  tft.println("--User Mode--");
+  tft.setTextSize(1);
+  tft.println(" ");
+  tft.setTextColor(ILI9341_GREEN);  tft.setTextSize(3);
+  tft.println(" A. Operation");
+  tft.println(" B. Configurations");
+  tft.println(" #. Main Menu");
+
+  while (userModeKey == NULL)
+  {
+    userModeKey = customKeypad.getKey();
+  }
+
+  userModeLoop(userModeKey);
+}
+
+//This function to take in keypad input for userMode
+void userModeLoop(char input) {
+  if (input){
+  switch (input) {
+  case 'A': // Operation
+    //add function to start operation
+    break;
+  case 'B': // Configuration
+    //add function to display configurations
+    break;
+   case '#': // return to main Menu
+    mainMenu();
+    break;
+  default:
+    tft.setCursor(20, 190);
+    tft.setTextColor(ILI9341_RED);  tft.setTextSize(2);
+    tft.print("Invalid Option ...");
+    delay(1000);
+    userModeMenu();
     break;
     }
   } 
   delay(10);
 }
 
-//This function to print main menu and options
-void mainMenu() {
+//This function to print developer mode menu and options
+void developerModeMenu() {
+
+  char developerModeKey = NULL;
+  
+  tft.fillScreen(ILI9341_NAVY);
+  tft.setCursor(5,0);
+  tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
+  tft.println("--Developer Mode--");
+  tft.setTextSize(0.6);
+  tft.println(" ");
+  tft.setTextColor(ILI9341_GREEN);  tft.setTextSize(2.5);
+  tft.println(" 1. Bat Length");
+  tft.println(" 2. Bat Circumference");
+  tft.println(" 3. Wood Type");
+  tft.println(" 4. Travel Speed");
+  tft.println(" 5. Rotation Angle");
+  tft.println(" 6. Force");
+  tft.println(" #. Main Menu");
+
+  while (developerModeKey == NULL)
+    {
+    developerModeKey = customKeypad.getKey();
+    }
+
+  developerModeLoop(developerModeKey);
+  
+  
+  
+}
+
+//This function to take in keypad input for developerMode
+void developerModeLoop(char input) {
+  if (input){
+  switch (input) {
+  case '1': // bat length
+    //add function to change bat length
+    break;
+  case '2': // bat circumference
+    //add function to change bat circumference
+    break;
+  case '3': // wood type
+    //add function to change wood type
+    break;
+  case '4': // travel speed
+    //add function to change travel speed
+    break;
+  case '5': // rotation angle
+    //add function to change rotation angle
+    break;
+  case '6': // force
+    //add function to change force option
+    break;
+  case '#': // return to main Menu
+    mainMenu();
+    break;
+  default:
+    tft.setCursor(20, 190);
+    tft.setTextColor(ILI9341_RED);  tft.setTextSize(2);
+    tft.print("Invalid Option ...");
+    delay(1000);
+    developerModeMenu();
+    break;
+    }
+  } 
+  delay(10);
+}
+
+//This function to print test menu and options
+void testModeMenu() {
+  char testModeKey = NULL;
   tft.fillScreen(ILI9341_NAVY);
   tft.setCursor(5,0);
   tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(4);
-  tft.println("--Main Menu--");
+  tft.println("--Test Mode--");
   tft.setTextSize(1);
   tft.println(" ");
   tft.setTextColor(ILI9341_GREEN);  tft.setTextSize(3);
@@ -263,6 +447,48 @@ void mainMenu() {
   tft.println(" B. Motor    Test");
   tft.println(" C. Solenoid Test");
   tft.println(" D. Keypad   Test");
+  tft.println(" 0. All      Test");
+  tft.println(" #. Main Menu");
+
+  while (testModeKey == NULL)
+    {
+    testModeKey = customKeypad.getKey();
+    }
+  testModeLoop(testModeKey);
+}
+
+//This function to take in keypad input for developerMode
+void testModeLoop(char input) {
+  if (input){
+  switch (input) {
+  case 'A': // display test
+    displayTest();
+    break;
+  case 'B': // motor test
+    motorTest();
+    break;
+  case 'C': // solenoid test
+    solenoidTest();
+    break;
+  case 'D': // keypad test
+    keypadTest();
+    break;
+  case '0': // keypad test
+    AllTest(); 
+    break;
+  case '#': // return to main Menu
+    mainMenu();
+    break;
+  default:
+    tft.setCursor(20, 190);
+    tft.setTextColor(ILI9341_RED);  tft.setTextSize(2);
+    tft.print("Invalid Option ...");
+    delay(1000);
+    testModeMenu();
+    break;
+    }
+  } 
+  delay(10);
 }
 
 void StepForward(float delay_time)
@@ -281,8 +507,11 @@ void StepForward(float delay_time)
   }
 }
 
-void StepForward180(float delay_time)
+void StepForward180(float delay_time, int solenoidMode)
 {
+  if(solenoidMode) {
+    digitalWrite(sig, HIGH);
+  }
   digitalWrite(DIR2, LOW);
   for (int i = 0; i < 1; i++)
   {
@@ -307,7 +536,53 @@ void StepForward180(float delay_time)
     }
     delay(delay_time);
   }
+  if(solenoidMode) {
+    digitalWrite(sig, LOW);
+  }
 }
+
+//This function to test the solenoid
+void AllTest() {
+  tft.fillScreen(ILI9341_BLACK);
+  tft.setCursor(2, 100);
+  tft.setTextColor(ILI9341_BLUE);  tft.setTextSize(4);
+  tft.print("TEST ALL Parts");
+  tft.println(" ");
+
+  
+  tft.setTextColor(ILI9341_RED);  tft.setTextSize(2);
+  //tft.println(" ");
+  tft.println("Press 1 to START");
+  tft.println("Press/hold # to EXIT");
+
+  char keyIn = 0;
+
+  //press 1 to start
+  while((customKeypad.getKey()) != '1');
+
+  //press/hold # to EXIT
+  while(keyIn != '#') {
+    StepForward(delay_time);
+    StepForward180(delay_time, 1);
+
+    
+    p = analogRead(A0);
+    delay_time = map(p, 0, 1023, 50, 1000
+    );
+
+    /*
+    digitalWrite(sig, HIGH);
+    delay(p);
+    digitalWrite(sig, LOW);
+    delay(p);
+    */
+    
+    keyIn = customKeypad.getKey();
+  }
+  delay(500);
+  mainMenu();
+}
+
 
 //This function to test the solenoid
 void motorTest() {
@@ -321,14 +596,18 @@ void motorTest() {
   tft.println("Press/hold # to EXIT");
 
   char keyIn = 0;
+  //fix this while loop
   while((customKeypad.getKey()) != '1');
   while(keyIn != '#') {
     StepForward(delay_time);
-    StepForward180(delay_time);
+    StepForward180(delay_time, 0);
 
-    p = analogRead(A0);
-    delay_time = map(p, 0, 1023, 400, 1500);
     
+    p = analogRead(A0);
+    delay_time = map(p, 0, 1023, 50, 1000
+    );
+
+    //delay_time = 100;
     keyIn = customKeypad.getKey();
   }
   delay(500);
